@@ -1,4 +1,5 @@
-class DNA
+
+class DNA 
 {
   float[] genes;
   
@@ -12,10 +13,13 @@ class DNA
     {
       for(int i = 0; i < genes.length; i++)
       {
-        genes[i] = getRandomGene(i);
+        genes[i] = getInitialRandomGene(i);
       }
     }
-  } //<>//
+  }
+  
+    
+ 
   
   public DNA crossover(DNA otherParent)
   {
@@ -35,7 +39,7 @@ class DNA
     {
       if(random(1) < mutationRate)
       {
-        genes[i] = getRandomGene(i);
+        genes[i] = getRandomGene(i, genes[i]);
       }
     }
   }

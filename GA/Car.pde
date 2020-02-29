@@ -1,7 +1,8 @@
-class Car
+class Car 
 {
   int ID;
   float x, y;
+  boolean imageSelected = false;
   
   Wheel frontWheel;
   Wheel backWheel;
@@ -14,6 +15,8 @@ class Car
   
   RevoluteJoint frontWheelJoint;
   RevoluteJoint backWheelJoint;
+  
+  float fitness;
 
   public Car(int ID_, float x_, float y_, float[] dna_)
   {
@@ -57,9 +60,9 @@ class Car
     
     RevoluteJointDef frontRJD = new RevoluteJointDef();
     frontRJD.initialize(frontWheel.body, chassis.body, frontWheel.body.getWorldCenter());
-    frontRJD.motorSpeed = PI*4;       
-    frontRJD.maxMotorTorque = 20000.0; 
-    frontRJD.enableMotor = false;      
+    frontRJD.motorSpeed = PI*6;       
+    frontRJD.maxMotorTorque = 10000.0; 
+    frontRJD.enableMotor = true;      
     frontWheelJoint = (RevoluteJoint) box2d.world.createJoint(frontRJD);
     
     
@@ -67,11 +70,13 @@ class Car
     
     RevoluteJointDef backRJD = new RevoluteJointDef();
     backRJD.initialize(backWheel.body, chassis.body, backWheel.body.getWorldCenter());
-    backRJD.motorSpeed = PI*4;       
-    backRJD.maxMotorTorque = 20000.0; 
-    backRJD.enableMotor = false;      
+    backRJD.motorSpeed = PI*6;       
+    backRJD.maxMotorTorque = 10000.0; 
+    backRJD.enableMotor = true;      
     backWheelJoint = (RevoluteJoint) box2d.world.createJoint(backRJD);
   }
+  
+  
   
   void renderImage(float scale)
   {
