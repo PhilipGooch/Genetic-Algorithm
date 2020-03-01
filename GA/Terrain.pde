@@ -13,7 +13,7 @@ class Terrain
     
     int interval = 300;
     int count = 0;
-    noiseSeed(300);
+    noiseSeed(4);
     for(float i = 0; i <= 100; i++)
     {
        surface.add(new Vec2(i * interval - interval, height/2 + (noise(count++) - 0.5) * 600));

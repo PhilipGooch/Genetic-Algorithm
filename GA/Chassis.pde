@@ -12,11 +12,11 @@ class Chassis
   
   float[] angleDNA;
   float[] distanceDNA;
-  float[][] sortedDNA;
+  //float[][] sortedDNA;
   
   
   
-  Vec2 ipixelVertices[];
+  Vec2 imagePixelVertices[];
   Vec2 iworldVertices[];
   
   Vec2 ipos = new Vec2();
@@ -36,19 +36,21 @@ class Chassis
     bd.position.set(box2d.coordPixelsToWorld(center));
     body = box2d.createBody(bd);
 
-    sortedDNA = sortDNA(angleDNA, distanceDNA, 8);
+    //sortedDNA = sortDNA(angleDNA, distanceDNA, 8);
 
     pixelVertices = new Vec2[8];
     for(int i = 0; i < 8; i++)
     {
-      pixelVertices[i] = new Vec2(cos(-sortedDNA[i][0]) * sortedDNA[i][1], sin(-sortedDNA[i][0]) * sortedDNA[i][1]); 
+      pixelVertices[i] = new Vec2(cos(-angleDNA[i]) * distanceDNA[i], sin(-angleDNA[i]) * distanceDNA[i]); 
+      //pixelVertices[i] = new Vec2(cos(-sortedDNA[i][0]) * sortedDNA[i][1], sin(-sortedDNA[i][0]) * sortedDNA[i][1]); 
     }
 
     PolygonShape ps = new PolygonShape();
     worldVertices = new Vec2[8];
     for(int i = 0; i < 8; i++)
     {
-      worldVertices[i] = new Vec2(box2d.scalarPixelsToWorld(cos(sortedDNA[i][0]) * sortedDNA[i][1]), box2d.scalarPixelsToWorld(sin(sortedDNA[i][0]) * sortedDNA[i][1])); 
+      worldVertices[i] = new Vec2(box2d.scalarPixelsToWorld(cos(angleDNA[i]) * distanceDNA[i]), box2d.scalarPixelsToWorld(sin(angleDNA[i]) * distanceDNA[i])); 
+      //worldVertices[i] = new Vec2(box2d.scalarPixelsToWorld(cos(sortedDNA[i][0]) * sortedDNA[i][1]), box2d.scalarPixelsToWorld(sin(sortedDNA[i][0]) * sortedDNA[i][1])); 
     }
     ps.set(worldVertices, 8);
     
@@ -63,16 +65,15 @@ class Chassis
 
     body.createFixture(fd);
     
-    //generateImageVertices(0.14);
-    
   }
   
   void generateImageVertices(float scale)
   {
-    ipixelVertices = new Vec2[8];
+    imagePixelVertices = new Vec2[8];
     for(int i = 0; i < 8; i++)
     {
-      ipixelVertices[i] = new Vec2(cos(-sortedDNA[i][0]) * sortedDNA[i][1] * scale, sin(-sortedDNA[i][0]) * sortedDNA[i][1] * scale); 
+      imagePixelVertices[i] = new Vec2(cos(-angleDNA[i]) * distanceDNA[i] * scale, sin(-angleDNA[i]) * distanceDNA[i] * scale); 
+      //ipixelVertices[i] = new Vec2(cos(-sortedDNA[i][0]) * sortedDNA[i][1] * scale, sin(-sortedDNA[i][0]) * sortedDNA[i][1] * scale); 
     }
   }
   
@@ -86,11 +87,11 @@ class Chassis
     rectMode(CENTER);
     
     beginShape();
-    for (Vec2 v: ipixelVertices) {
+    for (Vec2 v: imagePixelVertices) {
       vertex(v.x, v.y);
     }
     endShape(CLOSE);
-    for (Vec2 v: ipixelVertices) {
+    for (Vec2 v: imagePixelVertices) {
       line(0, 0, v.x, v.y);
     }
     popMatrix();
@@ -125,33 +126,33 @@ class Chassis
     
   }
  
-  float[][] sortDNA(float angle[], float distance[], int n)  
-  {   
-    // bubble sort
-    for (int i = 0; i < n-1; i++) 
-    {
-      for (int j = 0; j < n-i-1; j++) 
-      {
-        if (angle[j] > angle[j+1])  
-        {
-            float angleTemp = angle[j];
-            angle[j] = angle[j + 1];
-            angle[j + 1] = angleTemp;
+  //float[][] sortDNA(float angle[], float distance[], int n)  
+  //{   
+  //  // bubble sort
+  //  for (int i = 0; i < n-1; i++) 
+  //  {
+  //    for (int j = 0; j < n-i-1; j++) 
+  //    {
+  //      if (angle[j] > angle[j+1])  
+  //      {
+  //          float angleTemp = angle[j];
+  //          angle[j] = angle[j + 1];
+  //          angle[j + 1] = angleTemp;
             
-            float distanceTemp = distance[j];
-            distance[j] = distance[j + 1];
-            distance[j + 1] = distanceTemp;
-        }
-      }
-    } 
+  //          float distanceTemp = distance[j];
+  //          distance[j] = distance[j + 1];
+  //          distance[j + 1] = distanceTemp;
+  //      }
+  //    }
+  //  } 
     
-    float[][] combined = new float[n][2];
-    for(int i = 0; i < n; i++)
-    {
-      combined[i][0] = angle[i];
-      combined[i][1] = distance[i];
-    }
+  //  float[][] combined = new float[n][2];
+  //  for(int i = 0; i < n; i++)
+  //  {
+  //    combined[i][0] = angle[i];
+  //    combined[i][1] = distance[i];
+  //  }
     
-    return combined;
-  }  
+  //  return combined;
+  //}  
 }

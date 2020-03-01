@@ -1,3 +1,5 @@
+
+
 class Car 
 {
   int ID;
@@ -17,6 +19,7 @@ class Car
   RevoluteJoint backWheelJoint;
   
   float fitness;
+  boolean tested = false;
 
   public Car(int ID_, float x_, float y_, float[] dna_)
   {
@@ -52,8 +55,8 @@ class Car
     
     chassis = new Chassis(ID, x, y, chassisAngleDNA, chassisDistanceDNA, CAR, ENVIRONMENT);
     
-    frontWheel = new Wheel(ID, x + chassis.pixelVertices[2].x, y + chassis.pixelVertices[2].y, dna[16], CAR, ENVIRONMENT);
-    backWheel = new Wheel(ID, x + chassis.pixelVertices[5].x, y + chassis.pixelVertices[5].y, dna[17], CAR, ENVIRONMENT);
+    frontWheel = new Wheel(ID, x + chassis.pixelVertices[0].x, y + chassis.pixelVertices[0].y, dna[16], CAR, ENVIRONMENT);
+    backWheel = new Wheel(ID, x + chassis.pixelVertices[4].x, y + chassis.pixelVertices[4].y, dna[17], CAR, ENVIRONMENT);
     
     
     
@@ -83,10 +86,10 @@ class Car
     chassis.generateImageVertices(scale);
     chassis.renderImage();
     strokeWeight(1);
-    ellipse(chassis.ipixelVertices[2].x, chassis.ipixelVertices[2].y, frontWheel.r * scale, frontWheel.r * scale);
-    line(chassis.ipixelVertices[2].x, chassis.ipixelVertices[2].y, chassis.ipixelVertices[2].x, chassis.ipixelVertices[2].y + frontWheel.r / 2 * scale);
-    ellipse(chassis.ipixelVertices[5].x, chassis.ipixelVertices[5].y, backWheel.r * scale, backWheel.r * scale);
-    line(chassis.ipixelVertices[5].x, chassis.ipixelVertices[5].y, chassis.ipixelVertices[5].x, chassis.ipixelVertices[5].y + backWheel.r / 2 * scale);
+    ellipse(chassis.imagePixelVertices[0].x, chassis.imagePixelVertices[0].y, frontWheel.r * scale, frontWheel.r * scale);
+    line(chassis.imagePixelVertices[0].x, chassis.imagePixelVertices[0].y, chassis.imagePixelVertices[0].x, chassis.imagePixelVertices[0].y + frontWheel.r / 2 * scale);
+    ellipse(chassis.imagePixelVertices[4].x, chassis.imagePixelVertices[4].y, backWheel.r * scale, backWheel.r * scale);
+    line(chassis.imagePixelVertices[4].x, chassis.imagePixelVertices[4].y, chassis.imagePixelVertices[4].x, chassis.imagePixelVertices[4].y + backWheel.r / 2 * scale);
   }
   
   void render(float scale)
@@ -98,4 +101,10 @@ class Car
     
   }
   
+}
+
+class AComparator implements Comparator<Car> {
+ int compare(Car a, Car b) {
+   return (int)b.fitness - (int)a.fitness;
+ }
 }
