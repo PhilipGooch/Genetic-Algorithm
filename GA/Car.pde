@@ -4,7 +4,7 @@ class Car
 {
   int ID;
   float x, y;
-  boolean imageSelected = false;
+  boolean selected = false;
   
   Wheel frontWheel;
   Wheel backWheel;
@@ -18,8 +18,9 @@ class Car
   RevoluteJoint frontWheelJoint;
   RevoluteJoint backWheelJoint;
   
+  boolean hasBody = false;
+  
   float fitness;
-  boolean tested = false;
 
   public Car(int ID_, float x_, float y_, float[] dna_)
   {
@@ -58,18 +59,41 @@ class Car
     frontWheel = new Wheel(ID, x + chassis.pixelVertices[0].x, y + chassis.pixelVertices[0].y, dna[16], CAR, ENVIRONMENT);
     backWheel = new Wheel(ID, x + chassis.pixelVertices[4].x, y + chassis.pixelVertices[4].y, dna[17], CAR, ENVIRONMENT);
     
-    
-    
-    
+    createBody();
+  }
+  
+  void createBody()
+  {
+    if(!hasBody)
+    {
+      chassis.createBody();
+      frontWheel.createBody();
+      backWheel.createBody();
+      createJoints();
+      hasBody = true;
+    }
+  }
+  
+  void destroyBody()
+  {
+    if(hasBody)
+    {
+      destroyJoints();
+      chassis.destroyBody();
+      frontWheel.destroyBody();
+      backWheel.destroyBody();
+      hasBody = false;
+    }
+  }
+  
+  void createJoints()
+  {
     RevoluteJointDef frontRJD = new RevoluteJointDef();
     frontRJD.initialize(frontWheel.body, chassis.body, frontWheel.body.getWorldCenter());
     frontRJD.motorSpeed = PI*6;       
     frontRJD.maxMotorTorque = 10000.0; 
     frontRJD.enableMotor = true;      
     frontWheelJoint = (RevoluteJoint) box2d.world.createJoint(frontRJD);
-    
-    
-    
     
     RevoluteJointDef backRJD = new RevoluteJointDef();
     backRJD.initialize(backWheel.body, chassis.body, backWheel.body.getWorldCenter());
@@ -79,7 +103,19 @@ class Car
     backWheelJoint = (RevoluteJoint) box2d.world.createJoint(backRJD);
   }
   
-  
+  void destroyJoints()
+  {
+    if(frontWheelJoint != null)
+    {
+      box2d.world.destroyJoint(frontWheelJoint);
+      frontWheelJoint = null;
+    }
+    if(backWheelJoint != null)
+    {
+      box2d.world.destroyJoint(backWheelJoint);
+      backWheelJoint = null;
+    }
+  }
   
   void renderImage(float scale)
   {

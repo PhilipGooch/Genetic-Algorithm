@@ -88,19 +88,19 @@ class GeneticAlgorithm
   // returns the index of the parent in the population array
   int ChooseParent()
   {
-    return selectionFunction();
-    //float randomNumber = random(1) * fitnessSum;
+    //return selectionFunction();
+    float randomNumber = random(1) * fitnessSum;
     
-    //// This algorithm has the effect of being more likely to choose fitter parents.
-    //for(int i = 0; i < population.size(); i++)
-    //{
-    //  if(randomNumber < population.get(i).fitness)
-    //  {
-    //    return i;
-    //  }
-    //  randomNumber -= population.get(i).fitness;
-    //}
-    //return (int)random(population.size());   // possible bug here with out of range exception casting to int from picking highest number?
+    // This algorithm has the effect of being more likely to choose fitter parents.
+    for(int i = 0; i < population.size(); i++)
+    {
+      if(randomNumber < population.get(i).fitness)
+      {
+        return i;
+      }
+      randomNumber -= population.get(i).fitness;
+    }
+    return (int)random(population.size());   // possible bug here with out of range exception casting to int from picking highest number?
   }
   
 

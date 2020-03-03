@@ -11,16 +11,16 @@ import java.util.Collections;
 
 enum STATE
 {
-  POPULATION,
+  UI,
   RUNNING
 } 
 
-STATE state = STATE.POPULATION;
+STATE state = STATE.UI;
 
 Box2DProcessing box2d;
 
 float timeStep = 1.0f / 60;
-int steps = 1000;
+int steps = 5000;
 int stepCount = 0;
 
 GeneticAlgorithm ga;
@@ -44,17 +44,20 @@ boolean lastD = false;
 
 PVector selectionBoxSize;
 
-Button resetButton = new Button(1100, 50, 160, 40, "Reset", true);
-Button quickButton = new Button(1100, 100, 160, 40, "Quick", true);
-Button runButton = new Button(1100, 150, 160, 40, "Run", true);
-Button sortButton = new Button(1100, 200, 160, 40, "Sort", false);
-Button breedButton = new Button(1100, 250, 160, 40, "Breed", false);
-Button playButton = new Button(1100, 300, 160, 40, "Play", false);
+Button backButton = new Button(1200, 25, 160, 40, "Back", true);
+Button resetButton = new Button(1200, 75, 160, 40, "Reset", true);
+Button simulateButton = new Button(1200, 125, 160, 40, "Simulate", true);
+Button runButton = new Button(1200, 175, 160, 40, "Run", false);
+Button sortButton = new Button(1200, 225, 160, 40, "Sort", false);
+Button breedButton = new Button(1200, 275, 160, 40, "Breed", false);
+
 
 boolean hoveringSelectionBox = false;
 int hoverIndex = -1;
 
 int triggerQuickButton = 0;
+
+ArrayList<Integer> selectedCarIndices;
 
 // CONSTRUCTOR
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +85,7 @@ void setup()
   }
   
   
-  if(state == STATE.POPULATION)
+  if(state == STATE.UI)
   {
     
   }
@@ -106,8 +109,24 @@ float fitnessFunction(int index)
 // SELECTION FUNCTION
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int selectionFunction()
+int chooseFittest()
 {
+  int fittestIndex = 0;
+  for(int i = 1; i < populationSize; i++)
+  {
+    if(cars.get(i).fitness > cars.get(fittestIndex).fitness)
+    {
+      fittestIndex = i;
+    }
+  }
+  return fittestIndex;
+}
+
+int chooseAboveAverage(int fittestIndex)
+{
+  
+  
+  
   // Picking above average DNA
   ArrayList<Integer> remainingIndices = new ArrayList<Integer>();
   for(int i = 0; i < populationSize; i++)
@@ -188,9 +207,12 @@ void sortCars()
 
 void setCarFitnesses()
 {
-  for(int i = 0; i < populationSize; i++)
+  for(Car car : cars)
   {
-    cars.get(i).fitness = box2d.getBodyPixelCoord(cars.get(i).chassis.body).x;
+    if(car.hasBody)
+    {
+      car.fitness = box2d.getBodyPixelCoord(car.chassis.body).x;
+    }
   }
 }
 
@@ -226,20 +248,27 @@ void breed()
   averageFitness = 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 int leaderIndex()
 {
-  int index = 0;
+  
+  int index = -1;
   for(int i = 0; i < cars.size(); i++)
   {
-    if(cars.get(i).chassis.pos.x > cars.get(index).chassis.pos.x + 50)
+    if(cars.get(i).hasBody && index == -1)
     {
       index = i;
+    }
+    else if(cars.get(i).hasBody)
+    {
+      if(cars.get(i).chassis.pos.x > cars.get(index).chassis.pos.x + 50)
+      {
+        index = i;
+      }
     }
   }
   return index;
 }
+
 
 
 
@@ -255,7 +284,7 @@ void update()
                  (int)  (mouseY / (selectionBoxSize.y / 16)) * 16;
   }
   
-  if(state == STATE.POPULATION)
+  if(state == STATE.UI)
   {
   }
   
@@ -270,9 +299,7 @@ void update()
       cameraPosition = new PVector();
       cameraTarget = new PVector();
       leader = null;
-      state = STATE.POPULATION;
-      runButton.valid = false;
-      quickButton.valid = false;
+      state = STATE.UI;
       stepCount = 0;
     }
     
@@ -297,7 +324,7 @@ void draw()
   
   // POPULATION
   /////////////////////////////////////////////////////
-  if(state == STATE.POPULATION)
+  if(state == STATE.UI)
   {
     background(255);
     fill(0);
@@ -308,7 +335,7 @@ void draw()
     for(int i = 0; i < cars.size(); i++)
     {
       // IMAGE BORDER
-      if(cars.get(i).imageSelected)
+      if(cars.get(i).selected)
       {
         noFill();
         stroke(255, 0, 0);
@@ -342,7 +369,7 @@ void draw()
     }
     
     resetButton.render();
-    quickButton.render();
+    simulateButton.render();
     sortButton.render();
     runButton.render();
     breedButton.render();
@@ -350,7 +377,7 @@ void draw()
     text(ga.generation, 900, 50);
     if(averageFitness == 0)
     {
-      text("?", 900, 100); //<>//
+      text("?", 900, 100);
     }
     else
     {
@@ -364,10 +391,10 @@ void draw()
     {
       //rect(0, 0, 50, 50);
       quickRun();
-      runButton.valid = false;
+      runButton.valid = true;
       sortButton.valid = true;
       breedButton.valid = true;
-      quickButton.valid = false;
+      simulateButton.valid = false;
       
       triggerQuickButton = 0;
     }
@@ -382,21 +409,26 @@ void draw()
     textSize(18);
     text(stepCount, 20, 50);
     text((int) frameRate, 20, 20);
-    text(box2d.getBodyPixelCoord(cars.get(0).chassis.body).x, 20, 80);
+    //text(box2d.getBodyPixelCoord(cars.get(0).chassis.body).x, 20, 80);
     
     for(int i = 0; i < 8; i++)
     {
       text(cars.get(0).dna[i], 20, 110 + i * 20);
     }
     
+    backButton.render();
+    
     translate(cameraPosition.x, cameraPosition.y);
     
     for(Car car : cars)
     {
+      if(car.selected)
+      {
         car.render(1);
+      }
     }
     terrain.render();
-   
+    
   }
   
 }

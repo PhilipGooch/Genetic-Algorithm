@@ -2,11 +2,11 @@ void mousePressed()
 {
   if(mouseButton == LEFT)
   {
-    if(state == STATE.POPULATION)
+    if(state == STATE.UI)
     {
       if(hoveringSelectionBox && hoverIndex < populationSize)
       {
-        cars.get(hoverIndex).imageSelected = !cars.get(hoverIndex).imageSelected;
+        cars.get(hoverIndex).selected = !cars.get(hoverIndex).selected;
       }
       
       // RESET
@@ -14,16 +14,17 @@ void mousePressed()
       {
         resetButton.pressed = true;
         newPopulation();
-        quickButton.valid = true;
+        simulateButton.valid = true;
+        runButton.valid = true;
         sortButton.valid = false;
         breedButton.valid = false;
       }
       
-      // QUICK
-      if(quickButton.hit() && quickButton.valid)
+      // SIMULATE
+      if(simulateButton.hit() && simulateButton.valid)
       {
-        quickButton.valid = false;
-        quickButton.pressed = true;
+        simulateButton.valid = false;
+        simulateButton.pressed = true;
         triggerQuickButton = 1;
         
       }
@@ -33,8 +34,18 @@ void mousePressed()
       {
         runButton.pressed = true;
         breedButton.valid = true;
-        quickButton.valid = false;
         sortButton.valid = true;
+        simulateButton.valid = false;
+        selectedCarIndices = new ArrayList<Integer>();
+        for(int i = 0; i < cars.size(); i++)
+        {
+          cars.get(i).destroyBody();
+          if(cars.get(i).selected)
+          {
+            cars.get(i).createBody();
+            selectedCarIndices.add(i);
+          }
+        }
         state = STATE.RUNNING;
       }
       
@@ -53,14 +64,21 @@ void mousePressed()
         breedButton.pressed = true;
         breedButton.valid = false;
         sortButton.valid = false;
-        quickButton.valid = true;
+        simulateButton.valid = true;
         runButton.valid = true;
       }
-      
-      // PLAY
-      if(playButton.hit() && playButton.valid)
+    }
+    else if(state == STATE.RUNNING)
+    {
+      // BACK
+      if(backButton.hit() && backButton.valid)
       {
-        playButton.pressed = true;
+        backButton.pressed = true;
+        cameraPosition = new PVector();
+        cameraTarget = new PVector();
+        leader = null;
+        state = STATE.UI;
+        stepCount = 0;
       }
     }
   }
@@ -70,10 +88,10 @@ void mouseReleased()
 {
   resetButton.pressed = false;
   sortButton.pressed = false;
-  quickButton.pressed = false;
+  simulateButton.pressed = false;
   runButton.pressed = false;
   breedButton.pressed = false;
-  playButton.pressed = false;
+  backButton.pressed = false;
 }
 
 void mouseDragged()
@@ -89,9 +107,9 @@ void mouseDragged()
     sortButton.pressed = false;
   }
   // QUICK
-  else if(quickButton.pressed && !quickButton.hit())
+  else if(simulateButton.pressed && !simulateButton.hit())
   {
-    quickButton.pressed = false;
+    simulateButton.pressed = false;
   }
   // RUN
   else if(runButton.pressed )
@@ -106,23 +124,24 @@ void mouseDragged()
     breedButton.pressed = false;
   }
   // PLAY
-  else if(playButton.pressed && !playButton.hit())
+  else if(backButton.pressed && !backButton.hit())
   {
-    playButton.pressed = false;
+    backButton.pressed = false;
   }
 }
 
 void keyPressed()
 {
+  if(key == ' ')
+  {
+    state = STATE.UI;
+  }
   if(key == 'a' && lastA == false)
   {
-    //timeStep -= 1f / 40;
-    //box2d.step(timeStep, 8, 6);
     lastA = true;
   }
   if(key == 'd' && lastD == false)
   {
-    //timeStep += 1f / 40;
     lastA = true;
   }
 }

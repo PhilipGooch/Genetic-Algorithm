@@ -8,14 +8,21 @@ class Wheel
   
   RevoluteJoint joint;
   
-  Wheel(int ID_, float x_, float y_, float r_, int categoryBits, int maskBits)
+  int categoryBits;
+  int maskBits;
+  
+  Wheel(int ID_, float x_, float y_, float r_, int categoryBits_, int maskBits_)
   {
     ID = ID_;
     x = x_;
     y = y_;
     r = r_;
-    
-     // Define the body and make it from the shape
+    categoryBits = categoryBits_;
+    maskBits = maskBits_;
+  }
+  
+  void createBody()
+  {
     BodyDef bd = new BodyDef();
     bd.type = BodyType.DYNAMIC;
     Vec2 center = new Vec2(x, y);
@@ -27,7 +34,6 @@ class Wheel
     
     FixtureDef fd = new FixtureDef();
     fd.shape = circle;
-    // Parameters that affect physics
     fd.density = 1;
     fd.friction = 100;
     fd.restitution = 0.3;
@@ -35,7 +41,12 @@ class Wheel
     fd.filter.maskBits = maskBits;
 
     body.createFixture(fd);
-
+  }
+  
+  void destroyBody()
+  {
+    box2d.world.destroyBody(body);
+    body = null;
   }
   
   void render(float scale)
